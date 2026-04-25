@@ -34,6 +34,8 @@ jobs:
           cp -r PR_Review _site/
           cp PROGRESS.md _site/
           cp AGENTS.md _site/
+          cp REVIEWER_PROMPT.md _site/
+          cp IMPLEMENTER_PROMPT.md _site/
 
           cp wiki.html _site/index.html
 
