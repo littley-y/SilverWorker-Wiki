@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.0/marked.min.js"></script>
 <style>
   :root {
     --white: #ffffff;
@@ -185,6 +185,8 @@
       <div class="nav-section-title overview">Overview</div>
       <a class="nav-link active" data-md="PROGRESS.md">Progress Dashboard</a>
       <a class="nav-link" data-md="AGENTS.md">AGENTS.md</a>
+      <a class="nav-link" data-md="REVIEWER_PROMPT.md">Reviewer Prompt</a>
+      <a class="nav-link" data-md="IMPLEMENTER_PROMPT.md">Implementer Prompt</a>
     </div>
     <div class="nav-section">
       <div class="nav-section-title planning">Planning</div>
@@ -232,6 +234,9 @@ const renderer = new marked.Renderer();
 renderer.link = (token) => {
   const href = token.href || '';
   const text = token.text || '';
+  if (typeof href === 'string' && href.startsWith('#')) {
+    return `<a href="${href}">${text}</a>`;
+  }
   if (typeof href === 'string' && href.endsWith('.md')) {
     return `<a href="#" class="md-link" data-md="${href}">${text}</a>`;
   }
@@ -241,16 +246,22 @@ marked.setOptions({ renderer });
 
 let currentPath = '';
 
+function normalizePath(baseDir, relativePath) {
+  try {
+    return new URL(relativePath, 'http://x/' + baseDir).pathname.slice(1);
+  } catch {
+    return baseDir + relativePath;
+  }
+}
+
 async function loadMarkdown(path, fromRoot) {
   try {
     if (fromRoot) {
-      // Sidebar link: resolve from site root
       currentPath = path;
     } else {
-      // Markdown internal link: resolve relative to current document
       if (currentPath && !path.includes('://')) {
         const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-        path = baseDir + path;
+        path = normalizePath(baseDir, path);
       }
       currentPath = path;
     }
@@ -282,7 +293,6 @@ document.querySelectorAll('.nav-link[data-md]').forEach(link => {
 
 const firstLink = document.querySelector('.nav-link[data-md]');
 if (firstLink) {
-  firstLink.classList.add('active');
   loadMarkdown(firstLink.dataset.md, true);
 }
 </script>

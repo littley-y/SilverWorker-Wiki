@@ -22,7 +22,8 @@ General/
 │   └── hook_post_pr_merge.py # Auto-syncs worktrees after merge
 ├── history/                  # Session history (all roles, flattened)
 ├── ERROR/                    # Fatal error logs
-├── PR_Review/                # Gemini reviewer feedback
+├── PR_Review/                # Code PR review feedback
+├── Page_Review/              # Wiki/Infra/Setup review feedback (non-PR work)
 ├── docs/                     # Reference documentation
 ├── verify_local.sh           # CI validation script (pub get → format → analyze → test)
 └── notify.py                 # Notification utility
