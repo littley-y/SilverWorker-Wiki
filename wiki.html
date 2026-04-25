@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SilverWorker Wiki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  :root {
+    --white: #ffffff;
+    --near-black: #1c1c1e;
+    --slate: #555a6a;
+    --placeholder: #a5a8b5;
+    --border: #c7cad5;
+    --ring: rgb(224,226,232);
+    --blue: #5b76fe;
+    --blue-pressed: #2a41b6;
+    --success: #00b473;
+    --sidebar-width: 300px;
+    /* Pastel accents */
+    --coral-light: #ffc6c6; --coral-dark: #600000;
+    --teal-light: #c3faf5; --teal-dark: #187574;
+    --pink: #fde0f0;
+    --yellow-dark: #746019;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--white); color: var(--near-black);
+    display: flex; height: 100vh; overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Sidebar */
+  #sidebar {
+    width: var(--sidebar-width); background: #fafafc;
+    border-right: 1px solid var(--ring);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  #sidebar-header {
+    padding: 32px 24px 24px;
+    border-bottom: 1px solid var(--ring);
+  }
+  #sidebar-header h1 {
+    font-family: "Inter", sans-serif;
+    font-size: 24px; font-weight: 600; line-height: 1.15; letter-spacing: -0.72px;
+    color: var(--near-black); margin-bottom: 6px;
+  }
+  #sidebar-header p {
+    font-size: 14px; color: var(--slate); line-height: 1.5;
+  }
+  #sidebar-nav {
+    flex: 1; overflow-y: auto; padding: 20px 16px;
+  }
+  .nav-section {
+    margin-bottom: 24px;
+    background: var(--white);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--ring) 0px 0px 0px 1px;
+  }
+  .nav-section-title {
+    font-family: "Inter", sans-serif;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 10px; padding-left: 4px;
+  }
+  .nav-section-title.overview { color: var(--blue); }
+  .nav-section-title.planning { color: var(--teal-dark); }
+  .nav-section-title.history { color: var(--coral-dark); }
+  .nav-section-title.pr { color: var(--yellow-dark); }
+  .nav-link {
+    display: block; padding: 7px 12px; border-radius: 8px;
+    color: var(--near-black); text-decoration: none;
+    font-size: 13.5px; font-weight: 500; line-height: 1.4;
+    cursor: pointer; transition: all 0.15s ease;
+  }
+  .nav-link:hover {
+    background: rgba(91,118,254,0.08); color: var(--blue);
+  }
+  .nav-link.active {
+    background: var(--blue); color: var(--white);
+    font-weight: 600;
+  }
+  /* Main content */
+  #main {
+    flex: 1; overflow-y: auto; padding: 48px 56px;
+    background: var(--white);
+  }
+  #content {
+    max-width: 720px; margin: 0 auto;
+    font-family: "Noto Sans KR", "Inter", sans-serif;
+    font-size: 16px; line-height: 1.7; color: var(--near-black);
+  }
+  #content h1 {
+    font-family: "Inter", sans-serif;
+    font-size: 40px; font-weight: 600; line-height: 1.15; letter-spacing: -1.2px;
+    margin-bottom: 24px; color: var(--near-black);
+  }
+  #content h2 {
+    font-family: "Inter", sans-serif;
+    font-size: 28px; font-weight: 600; line-height: 1.2; letter-spacing: -0.56px;
+    margin: 40px 0 16px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--ring);
+    color: var(--near-black);
+  }
+  #content h3 {
+    font-family: "Inter", sans-serif;
+    font-size: 20px; font-weight: 600; line-height: 1.3; letter-spacing: -0.3px;
+    margin: 28px 0 12px; color: var(--near-black);
+  }
+  #content p { margin-bottom: 16px; }
+  #content a {
+    color: var(--blue); text-decoration: none; font-weight: 500;
+    border-bottom: 1px solid rgba(91,118,254,0.3);
+    transition: border-color 0.15s;
+  }
+  #content a:hover { border-bottom-color: var(--blue); }
+  #content ul, #content ol { margin: 12px 0 12px 28px; }
+  #content li { margin-bottom: 6px; }
+  #content code {
+    background: #f4f4f7; padding: 3px 8px; border-radius: 6px;
+    font-size: 14px; font-family: "SF Mono", Monaco, "Courier New", monospace;
+    color: var(--near-black); border: 1px solid var(--ring);
+  }
+  #content pre {
+    background: #f4f4f7; padding: 20px; border-radius: 12px;
+    overflow-x: auto; margin: 20px 0;
+    border: 1px solid var(--ring);
+  }
+  #content pre code { background: none; padding: 0; border: none; }
+  #content table {
+    width: 100%; border-collapse: separate; border-spacing: 0;
+    margin: 20px 0; font-size: 14px;
+    border-radius: 12px; overflow: hidden;
+    box-shadow: var(--ring) 0px 0px 0px 1px;
+  }
+  #content th, #content td {
+    padding: 12px 16px; text-align: left;
+    border-bottom: 1px solid var(--ring);
+  }
+  #content th {
+    background: #fafafc; font-weight: 600; font-family: "Inter", sans-serif;
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--slate);
+  }
+  #content tr:last-child td { border-bottom: none; }
+  #content blockquote {
+    background: var(--pink); border-radius: 12px;
+    padding: 16px 20px; margin: 20px 0;
+    color: var(--slate); font-size: 15px;
+    box-shadow: var(--ring) 0px 0px 0px 1px;
+  }
+  #content blockquote p:last-child { margin-bottom: 0; }
+  #content hr {
+    border: none; border-top: 1px solid var(--ring);
+    margin: 32px 0;
+  }
+  #content img {
+    max-width: 100%; border-radius: 12px;
+    box-shadow: var(--ring) 0px 0px 0px 1px;
+  }
+  #loading {
+    text-align: center; padding: 80px; color: var(--placeholder);
+    font-family: "Inter", sans-serif; font-size: 14px;
+  }
+  /* Responsive */
+  @media (max-width: 768px) {
+    #sidebar { display: none; }
+    #main { padding: 24px; }
+    #content h1 { font-size: 28px; }
+    #content h2 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <div id="sidebar-header">
+    <h1>SilverWorker</h1>
+    <p>Project Wiki</p>
+  </div>
+  <div id="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title overview">Overview</div>
+      <a class="nav-link active" data-md="PROGRESS.md">Progress Dashboard</a>
+      <a class="nav-link" data-md="AGENTS.md">AGENTS.md</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title planning">Planning</div>
+      <a class="nav-link" data-md="planning/spec_01_project_setup.md">Spec 01: Project Setup</a>
+      <a class="nav-link" data-md="planning/spec_02_auth.md">Spec 02: Auth &amp; Profile</a>
+      <a class="nav-link" data-md="planning/spec_03_job_data.md">Spec 03: Job Data</a>
+      <a class="nav-link" data-md="planning/spec_04_job_list_ui.md">Spec 04: Job List UI</a>
+      <a class="nav-link" data-md="planning/spec_05_job_detail.md">Spec 05: Job Detail</a>
+      <a class="nav-link" data-md="planning/spec_06_application.md">Spec 06: Application</a>
+      <a class="nav-link" data-md="planning/spec_07_mypage.md">Spec 07: My Page</a>
+      <a class="nav-link" data-md="planning/spec_08_navigation.md">Spec 08: Navigation</a>
+      <a class="nav-link" data-md="planning/spec_09_ui_system.md">Spec 09: UI System</a>
+      <a class="nav-link" data-md="planning/spec_10_test_criteria.md">Spec 10: Test Criteria</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title history">History</div>
+      <a class="nav-link" data-md="history/2026-04-25-session-summary.md">Session Summary</a>
+      <a class="nav-link" data-md="history/2026-04-25-day1-review-fixes.md">Day 1 Review Fixes</a>
+      <a class="nav-link" data-md="history/2026-04-25-firebase-setup.md">Firebase Setup</a>
+      <a class="nav-link" data-md="history/2026-04-25-graphify-setup.md">Graphify Setup</a>
+      <a class="nav-link" data-md="history/2026-04-25-graphify-setup-review_claude.md">Graphify Review — Claude</a>
+      <a class="nav-link" data-md="history/2026-04-25-graphify-setup-review_gemini.md">Graphify Review — Gemini</a>
+      <a class="nav-link" data-md="history/2026-04-25-wiki-setup.md">Wiki Setup</a>
+      <a class="nav-link" data-md="history/2026-04-25-wiki-setup-review_claude.md">Wiki Review — Claude</a>
+      <a class="nav-link" data-md="history/2026-04-25-wiki-setup-review_gemini.md">Wiki Review — Gemini</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title pr">PR Reviews</div>
+      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-request.md">PR #1 Request</a>
+      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-review_claude.md">PR #1 Claude v1</a>
+      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-review_claude_v2.md">PR #1 Claude v2</a>
+      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-review_gemini.md">PR #1 Gemini v1</a>
+      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-review_gemini_v2.md">PR #1 Gemini v2</a>
+      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-postmerge-firebase-setup.md">Firebase Setup Post-Merge</a>
+      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-firebase-setup-review_gemini.md">Firebase Setup Gemini</a>
+      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-postmerge-firebase-setup-review_claude.md">Firebase Setup Claude</a>
+    </div>
+  </div>
+</div>
+<div id="main"><div id="content"><div id="loading">Loading...</div></div></div>
+<script>
+const contentDiv = document.getElementById('content');
+
+// Custom renderer: intercept .md links to use our nav system
+const renderer = new marked.Renderer();
+renderer.link = (href, title, text) => {
+  if (href.endsWith('.md')) {
+    return `<a href="#" class="md-link" data-md="${href}">${text}</a>`;
+  }
+  return `<a href="${href}" target="_blank" rel="noopener">${text}</a>`;
+};
+marked.setOptions({ renderer });
+
+let currentPath = '';
+
+async function loadMarkdown(path) {
+  try {
+    if (currentPath && !path.startsWith('/') && !path.includes('://')) {
+      const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+      path = baseDir + path;
+    }
+    currentPath = path;
+
+    const response = await fetch(path);
+    if (!response.ok) throw new Error('Failed to load ' + path);
+    const text = await response.text();
+    contentDiv.innerHTML = marked.parse(text);
+    document.querySelectorAll('.md-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        loadMarkdown(link.dataset.md);
+      });
+    });
+    window.scrollTo(0, 0);
+  } catch (e) {
+    contentDiv.innerHTML = '<p style="color:#ef4444">Error: ' + e.message + '</p>';
+  }
+}
+
+document.querySelectorAll('.nav-link[data-md]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+    loadMarkdown(link.dataset.md);
+  });
+});
+
+const firstLink = document.querySelector('.nav-link[data-md]');
+if (firstLink) {
+  firstLink.classList.add('active');
+  loadMarkdown(firstLink.dataset.md);
+}
+</script>
+</body>
+</html>
