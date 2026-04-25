@@ -4,232 +4,409 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SilverWorker Wiki</title>
+<link rel="preconnect" href="https://rsms.me/" crossorigin>
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.0/marked.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github.min.css" media="(prefers-color-scheme: light)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/highlight.min.js"></script>
 <style>
   :root {
-    --white: #ffffff;
-    --near-black: #1c1c1e;
-    --slate: #555a6a;
-    --placeholder: #a5a8b5;
-    --border: #c7cad5;
-    --ring: rgb(224,226,232);
-    --blue: #5b76fe;
-    --blue-pressed: #2a41b6;
-    --success: #00b473;
-    --sidebar-width: 300px;
-    /* Pastel accents */
-    --coral-light: #ffc6c6; --coral-dark: #600000;
-    --teal-light: #c3faf5; --teal-dark: #187574;
-    --pink: #fde0f0;
-    --yellow-dark: #746019;
+    --bg: oklch(99% 0 0);
+    --surface: oklch(97.5% 0 0);
+    --surface-2: oklch(95% 0 0);
+    --border: oklch(90% 0 0);
+    --border-strong: oklch(82% 0 0);
+    --text: oklch(20% 0 0);
+    --text-muted: oklch(50% 0 0);
+    --text-faint: oklch(65% 0 0);
+    --accent: oklch(58% 0.22 265);
+    --accent-hover: oklch(50% 0.24 265);
+    --accent-soft: oklch(96% 0.04 265);
+    --success: oklch(65% 0.18 145);
+    --danger: oklch(60% 0.22 25);
+    --warning: oklch(75% 0.16 75);
+    --fs-xs: 12px;
+    --fs-sm: 13.5px;
+    --fs-base: 15.5px;
+    --fs-lg: 18px;
+    --fs-xl: 22px;
+    --fs-2xl: 28px;
+    --fs-3xl: 36px;
+    --fs-4xl: 48px;
+    --r-sm: 4px;
+    --r-md: 6px;
+    --r-lg: 10px;
+    --r-xl: 16px;
+    --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+    --sidebar-w: 272px;
+    --toc-w: 220px;
+    --content-max: 740px;
+    --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --dur-fast: 120ms;
+    --dur-base: 200ms;
+  }
+  [data-theme="dark"] {
+    --bg: oklch(14% 0 0);
+    --surface: oklch(18% 0 0);
+    --surface-2: oklch(22% 0 0);
+    --border: oklch(28% 0 0);
+    --border-strong: oklch(38% 0 0);
+    --text: oklch(96% 0 0);
+    --text-muted: oklch(70% 0 0);
+    --text-faint: oklch(55% 0 0);
+    --accent: oklch(70% 0.20 265);
+    --accent-hover: oklch(78% 0.22 265);
+    --accent-soft: oklch(25% 0.08 265);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: oklch(14% 0 0);
+      --surface: oklch(18% 0 0);
+      --surface-2: oklch(22% 0 0);
+      --border: oklch(28% 0 0);
+      --border-strong: oklch(38% 0 0);
+      --text: oklch(96% 0 0);
+      --text-muted: oklch(70% 0 0);
+      --text-faint: oklch(55% 0 0);
+      --accent: oklch(70% 0.20 265);
+      --accent-hover: oklch(78% 0.22 265);
+      --accent-soft: oklch(25% 0.08 265);
+    }
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
   body {
-    font-family: "Inter", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: var(--white); color: var(--near-black);
-    display: flex; height: 100vh; overflow: hidden;
-    -webkit-font-smoothing: antialiased;
+    font-family: "Inter", "Inter var", "Noto Sans KR", -apple-system, sans-serif;
+    font-feature-settings: "cv11", "ss01", "ss03";
+    font-size: var(--fs-base);
+    line-height: 1.65;
+    letter-spacing: -0.005em;
+    color: var(--text);
+    background: var(--bg);
+    overflow: hidden;
+    height: 100vh;
   }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% -10%, var(--accent-soft), transparent 60%),
+      radial-gradient(ellipse 50% 40% at -10% 50%, var(--accent-soft), transparent 60%);
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: -1;
+  }
+  #layout { display: flex; height: 100vh; }
+
+  /* Scroll progress */
+  #scroll-progress {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: var(--accent);
+    width: 0; z-index: 100;
+    transition: width 50ms linear;
+  }
+
   /* Sidebar */
   #sidebar {
-    width: var(--sidebar-width); background: #fafafc;
-    border-right: 1px solid var(--ring);
-    display: flex; flex-direction: column; overflow: hidden;
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
   }
   #sidebar-header {
-    padding: 32px 24px 24px;
-    border-bottom: 1px solid var(--ring);
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--border);
   }
   #sidebar-header h1 {
-    font-family: "Inter", sans-serif;
-    font-size: 24px; font-weight: 600; line-height: 1.15; letter-spacing: -0.72px;
-    color: var(--near-black); margin-bottom: 6px;
+    font-size: 20px; font-weight: 600; letter-spacing: -0.02em;
+    color: var(--text); margin-bottom: 4px;
   }
   #sidebar-header p {
-    font-size: 14px; color: var(--slate); line-height: 1.5;
+    font-size: var(--fs-sm); color: var(--text-muted);
   }
   #sidebar-nav {
-    flex: 1; overflow-y: auto; padding: 20px 16px;
+    flex: 1; overflow-y: auto;
+    padding: 12px 8px;
   }
-  .nav-section {
-    margin-bottom: 24px;
-    background: var(--white);
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: var(--ring) 0px 0px 0px 1px;
-  }
+  .nav-section { margin-bottom: 4px; padding: 0 8px; }
   .nav-section-title {
-    font-family: "Inter", sans-serif;
-    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
-    margin-bottom: 10px; padding-left: 4px;
+    font-size: var(--fs-xs); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-faint); padding: 8px 12px;
   }
-  .nav-section-title.overview { color: var(--blue); }
-  .nav-section-title.planning { color: var(--teal-dark); }
-  .nav-section-title.history { color: var(--coral-dark); }
-  .nav-section-title.pr { color: var(--yellow-dark); }
   .nav-link {
-    display: block; padding: 7px 12px; border-radius: 8px;
-    color: var(--near-black); text-decoration: none;
-    font-size: 13.5px; font-weight: 500; line-height: 1.4;
-    cursor: pointer; transition: all 0.15s ease;
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 12px; border-radius: var(--r-md);
+    font-size: var(--fs-sm); color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+    cursor: pointer;
   }
-  .nav-link:hover {
-    background: rgba(91,118,254,0.08); color: var(--blue);
-  }
+  .nav-link:hover { color: var(--text); background: var(--surface-2); }
   .nav-link.active {
-    background: var(--blue); color: var(--white);
+    color: var(--accent); background: var(--accent-soft);
     font-weight: 600;
   }
-  /* Main content */
+
+  /* Main */
   #main {
-    flex: 1; overflow-y: auto; padding: 48px 56px;
-    background: var(--white);
+    flex: 1; display: flex; flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+  }
+  #topbar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; justify-content: flex-end; gap: 8px;
+    padding: 12px 40px;
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    background: color-mix(in oklch, var(--bg) 75%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  #topbar button {
+    padding: 6px 12px; border-radius: var(--r-md);
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text-muted); font-size: var(--fs-sm);
+    cursor: pointer; transition: all var(--dur-fast) var(--ease);
+  }
+  #topbar button:hover { background: var(--surface-2); color: var(--text); }
+  #content-wrap {
+    flex: 1; overflow-y: auto;
+    padding: 32px 40px;
   }
   #content {
-    max-width: 720px; margin: 0 auto;
-    font-family: "Noto Sans KR", "Inter", sans-serif;
-    font-size: 16px; line-height: 1.7; color: var(--near-black);
+    max-width: var(--content-max); margin: 0 auto;
+    font-size: var(--fs-base); line-height: 1.65;
   }
   #content h1 {
-    font-family: "Inter", sans-serif;
-    font-size: 40px; font-weight: 600; line-height: 1.15; letter-spacing: -1.2px;
-    margin-bottom: 24px; color: var(--near-black);
+    font-size: var(--fs-4xl); font-weight: 600;
+    letter-spacing: -0.04em; line-height: 1.1;
+    margin-bottom: 8px;
   }
   #content h2 {
-    font-family: "Inter", sans-serif;
-    font-size: 28px; font-weight: 600; line-height: 1.2; letter-spacing: -0.56px;
-    margin: 40px 0 16px; padding-bottom: 12px;
-    border-bottom: 1px solid var(--ring);
-    color: var(--near-black);
+    font-size: var(--fs-2xl); font-weight: 600;
+    letter-spacing: -0.02em; margin: 56px 0 16px;
+    scroll-margin-top: 80px;
   }
   #content h3 {
-    font-family: "Inter", sans-serif;
-    font-size: 20px; font-weight: 600; line-height: 1.3; letter-spacing: -0.3px;
-    margin: 28px 0 12px; color: var(--near-black);
+    font-size: var(--fs-lg); font-weight: 600;
+    margin: 32px 0 12px; scroll-margin-top: 80px;
   }
   #content p { margin-bottom: 16px; }
   #content a {
-    color: var(--blue); text-decoration: none; font-weight: 500;
-    border-bottom: 1px solid rgba(91,118,254,0.3);
-    transition: border-color 0.15s;
+    color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid color-mix(in oklch, var(--accent) 30%, transparent);
+    transition: border-color var(--dur-fast) var(--ease);
   }
-  #content a:hover { border-bottom-color: var(--blue); }
+  #content a:hover { border-bottom-color: var(--accent); }
   #content ul, #content ol { margin: 12px 0 12px 28px; }
   #content li { margin-bottom: 6px; }
   #content code {
-    background: #f4f4f7; padding: 3px 8px; border-radius: 6px;
-    font-size: 14px; font-family: "SF Mono", Monaco, "Courier New", monospace;
-    color: var(--near-black); border: 1px solid var(--ring);
+    font-family: "JetBrains Mono", "SF Mono", Monaco, monospace;
+    font-feature-settings: "calt", "ss01";
+    font-size: 13.5px;
+    background: var(--surface); padding: 2px 6px; border-radius: var(--r-sm);
+    border: 1px solid var(--border);
   }
   #content pre {
-    background: #f4f4f7; padding: 20px; border-radius: 12px;
-    overflow-x: auto; margin: 20px 0;
-    border: 1px solid var(--ring);
+    position: relative;
+    background: var(--surface); padding: 20px; border-radius: var(--r-lg);
+    border: 1px solid var(--border); overflow-x: auto; margin: 20px 0;
   }
   #content pre code { background: none; padding: 0; border: none; }
+  .copy-btn {
+    position: absolute; top: 12px; right: 12px;
+    padding: 4px 10px; font-size: 11px;
+    border: 1px solid var(--border); background: var(--bg); border-radius: var(--r-sm);
+    color: var(--text-muted); cursor: pointer; opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease);
+    font-family: "JetBrains Mono", monospace;
+  }
+  #content pre:hover .copy-btn { opacity: 1; }
   #content table {
     width: 100%; border-collapse: separate; border-spacing: 0;
-    margin: 20px 0; font-size: 14px;
-    border-radius: 12px; overflow: hidden;
-    box-shadow: var(--ring) 0px 0px 0px 1px;
+    margin: 20px 0; font-size: var(--fs-sm);
+    border-radius: var(--r-lg); overflow: hidden;
+    border: 1px solid var(--border);
   }
   #content th, #content td {
-    padding: 12px 16px; text-align: left;
-    border-bottom: 1px solid var(--ring);
+    padding: 10px 14px; text-align: left;
+    border-bottom: 1px solid var(--border);
   }
   #content th {
-    background: #fafafc; font-weight: 600; font-family: "Inter", sans-serif;
-    font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
-    color: var(--slate);
+    background: var(--surface); font-weight: 600;
+    font-size: var(--fs-xs); text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--text-muted);
   }
   #content tr:last-child td { border-bottom: none; }
   #content blockquote {
-    background: var(--pink); border-radius: 12px;
+    background: var(--surface); border-radius: var(--r-lg);
     padding: 16px 20px; margin: 20px 0;
-    color: var(--slate); font-size: 15px;
-    box-shadow: var(--ring) 0px 0px 0px 1px;
+    color: var(--text-muted);
+    border-left: 3px solid var(--accent);
   }
   #content blockquote p:last-child { margin-bottom: 0; }
-  #content hr {
-    border: none; border-top: 1px solid var(--ring);
-    margin: 32px 0;
+  #content hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+  #content img { max-width: 100%; border-radius: var(--r-lg); }
+  .heading-anchor {
+    margin-left: 8px; opacity: 0; color: var(--text-faint);
+    font-weight: 400; text-decoration: none; border: none;
+    transition: opacity var(--dur-fast) var(--ease);
   }
-  #content img {
-    max-width: 100%; border-radius: 12px;
-    box-shadow: var(--ring) 0px 0px 0px 1px;
+  .heading-anchor:hover { color: var(--accent); }
+  h2:hover .heading-anchor, h3:hover .heading-anchor { opacity: 1; }
+
+  /* TOC */
+  #toc {
+    width: var(--toc-w); flex-shrink: 0;
+    position: sticky; top: 0; align-self: flex-start;
+    padding: 24px 16px;
+    font-size: var(--fs-sm); color: var(--text-muted);
+    max-height: 100vh; overflow-y: auto;
+    border-left: 1px solid var(--border);
   }
-  #loading {
-    text-align: center; padding: 80px; color: var(--placeholder);
-    font-family: "Inter", sans-serif; font-size: 14px;
+  .toc-title {
+    font-size: var(--fs-xs); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-faint); margin-bottom: 8px;
   }
+  #toc a {
+    display: block; padding: 4px 8px; border-radius: var(--r-sm);
+    color: inherit; text-decoration: none; border: none;
+  }
+  #toc a:hover { color: var(--accent); }
+  #toc a.active {
+    color: var(--accent); font-weight: 600;
+    border-left: 2px solid var(--accent); padding-left: 6px;
+  }
+
+  /* Skeleton */
+  .skel {
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);
+    background-size: 200% 100%; animation: shimmer 1.4s infinite;
+    border-radius: var(--r-sm);
+  }
+  .skel-h1 { height: 40px; width: 60%; margin-bottom: 24px; }
+  .skel-line { height: 14px; width: 100%; margin-bottom: 10px; }
+  .skel-line.short { width: 70%; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* Command Palette */
+  #cmd-modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-start; justify-content: center; padding-top: 15vh; }
+  #cmd-modal.hidden { display: none; }
+  #cmd-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
+  #cmd-box { position: relative; width: 560px; max-width: calc(100vw - 32px); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); box-shadow: var(--shadow-md); overflow: hidden; }
+  #cmd-input { width: 100%; padding: 16px 20px; border: 0; outline: 0; font-size: 16px; background: transparent; color: var(--text); border-bottom: 1px solid var(--border); font-family: inherit; }
+  .cmd-item { padding: 10px 20px; font-size: var(--fs-sm); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .cmd-item:hover { background: var(--surface-2); color: var(--accent); }
+  .cmd-item span { font-size: 11px; color: var(--text-faint); font-family: "JetBrains Mono", monospace; }
+
   /* Responsive */
+  @media (max-width: 1100px) { #toc { display: none; } }
   @media (max-width: 768px) {
     #sidebar { display: none; }
-    #main { padding: 24px; }
-    #content h1 { font-size: 28px; }
-    #content h2 { font-size: 22px; }
+    #content-wrap { padding: 20px; }
+    #content h1 { font-size: var(--fs-3xl); }
+    #content h2 { font-size: var(--fs-xl); }
   }
 </style>
 </head>
 <body>
-<div id="sidebar">
-  <div id="sidebar-header">
-    <h1>SilverWorker</h1>
-    <p>Project Wiki</p>
-  </div>
-  <div id="sidebar-nav">
-    <div class="nav-section">
-      <div class="nav-section-title overview">Overview</div>
-      <a class="nav-link active" data-md="PROGRESS.md">Progress Dashboard</a>
-      <a class="nav-link" data-md="AGENTS.md">AGENTS.md</a>
-      <a class="nav-link" data-md="REVIEWER_PROMPT.md">Reviewer Prompt</a>
-      <a class="nav-link" data-md="IMPLEMENTER_PROMPT.md">Implementer Prompt</a>
+<div id="scroll-progress"></div>
+<div id="layout">
+  <aside id="sidebar">
+    <div id="sidebar-header">
+      <h1>SilverWorker</h1>
+      <p>Project Wiki</p>
     </div>
-    <div class="nav-section">
-      <div class="nav-section-title planning">Planning</div>
-      <a class="nav-link" data-md="planning/spec_01_project_setup.md">Spec 01: Project Setup</a>
-      <a class="nav-link" data-md="planning/spec_02_auth.md">Spec 02: Auth &amp; Profile</a>
-      <a class="nav-link" data-md="planning/spec_03_job_data.md">Spec 03: Job Data</a>
-      <a class="nav-link" data-md="planning/spec_04_job_list_ui.md">Spec 04: Job List UI</a>
-      <a class="nav-link" data-md="planning/spec_05_job_detail.md">Spec 05: Job Detail</a>
-      <a class="nav-link" data-md="planning/spec_06_application.md">Spec 06: Application</a>
-      <a class="nav-link" data-md="planning/spec_07_mypage.md">Spec 07: My Page</a>
-      <a class="nav-link" data-md="planning/spec_08_navigation.md">Spec 08: Navigation</a>
-      <a class="nav-link" data-md="planning/spec_09_ui_system.md">Spec 09: UI System</a>
-      <a class="nav-link" data-md="planning/spec_10_test_criteria.md">Spec 10: Test Criteria</a>
+    <div id="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Overview</div>
+        <a class="nav-link active" data-md="PROGRESS.md">Progress Dashboard</a>
+        <a class="nav-link" data-md="AGENTS.md">AGENTS.md</a>
+        <a class="nav-link" data-md="REVIEWER_PROMPT.md">Reviewer Prompt</a>
+        <a class="nav-link" data-md="IMPLEMENTER_PROMPT.md">Implementer Prompt</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Planning</div>
+        <a class="nav-link" data-md="planning/spec_01_project_setup.md">Spec 01: Project Setup</a>
+        <a class="nav-link" data-md="planning/spec_02_auth.md">Spec 02: Auth &amp; Profile</a>
+        <a class="nav-link" data-md="planning/spec_03_job_data.md">Spec 03: Job Data</a>
+        <a class="nav-link" data-md="planning/spec_04_job_list_ui.md">Spec 04: Job List UI</a>
+        <a class="nav-link" data-md="planning/spec_05_job_detail.md">Spec 05: Job Detail</a>
+        <a class="nav-link" data-md="planning/spec_06_application.md">Spec 06: Application</a>
+        <a class="nav-link" data-md="planning/spec_07_mypage.md">Spec 07: My Page</a>
+        <a class="nav-link" data-md="planning/spec_08_navigation.md">Spec 08: Navigation</a>
+        <a class="nav-link" data-md="planning/spec_09_ui_system.md">Spec 09: UI System</a>
+        <a class="nav-link" data-md="planning/spec_10_test_criteria.md">Spec 10: Test Criteria</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">History</div>
+        <a class="nav-link" data-md="history/2026-04-25-session-summary.md">Session Summary</a>
+        <a class="nav-link" data-md="history/2026-04-25-day1-review-fixes.md">Day 1 Review Fixes</a>
+        <a class="nav-link" data-md="history/2026-04-25-firebase-setup.md">Firebase Setup</a>
+        <a class="nav-link" data-md="history/2026-04-25-graphify-setup.md">Graphify Setup</a>
+        <a class="nav-link" data-md="history/2026-04-25-graphify-setup-review_claude.md">Graphify Review — Claude</a>
+        <a class="nav-link" data-md="history/2026-04-25-graphify-setup-review_gemini.md">Graphify Review — Gemini</a>
+        <a class="nav-link" data-md="history/2026-04-25-wiki-setup.md">Wiki Setup</a>
+        <a class="nav-link" data-md="history/2026-04-25-wiki-setup-review_claude.md">Wiki Review — Claude</a>
+        <a class="nav-link" data-md="history/2026-04-25-wiki-setup-review_gemini.md">Wiki Review — Gemini</a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">PR Reviews</div>
+        <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-request.md">PR #1 Request</a>
+        <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-review_claude.md">PR #1 Claude v1</a>
+        <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-review_claude_v2.md">PR #1 Claude v2</a>
+        <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-review_gemini.md">PR #1 Gemini v1</a>
+        <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-review_gemini_v2.md">PR #1 Gemini v2</a>
+        <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-postmerge-firebase-setup.md">Firebase Setup Post-Merge</a>
+        <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-firebase-setup-review_gemini.md">Firebase Setup Gemini</a>
+        <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-postmerge-firebase-setup-review_claude.md">Firebase Setup Claude</a>
+      </div>
     </div>
-    <div class="nav-section">
-      <div class="nav-section-title history">History</div>
-      <a class="nav-link" data-md="history/2026-04-25-session-summary.md">Session Summary</a>
-      <a class="nav-link" data-md="history/2026-04-25-day1-review-fixes.md">Day 1 Review Fixes</a>
-      <a class="nav-link" data-md="history/2026-04-25-firebase-setup.md">Firebase Setup</a>
-      <a class="nav-link" data-md="history/2026-04-25-graphify-setup.md">Graphify Setup</a>
-      <a class="nav-link" data-md="history/2026-04-25-graphify-setup-review_claude.md">Graphify Review — Claude</a>
-      <a class="nav-link" data-md="history/2026-04-25-graphify-setup-review_gemini.md">Graphify Review — Gemini</a>
-      <a class="nav-link" data-md="history/2026-04-25-wiki-setup.md">Wiki Setup</a>
-      <a class="nav-link" data-md="history/2026-04-25-wiki-setup-review_claude.md">Wiki Review — Claude</a>
-      <a class="nav-link" data-md="history/2026-04-25-wiki-setup-review_gemini.md">Wiki Review — Gemini</a>
+  </aside>
+  <main id="main">
+    <header id="topbar">
+      <button id="theme-toggle">Theme</button>
+      <button id="cmd-trigger">Search</button>
+    </header>
+    <div id="content-wrap">
+      <div id="content">
+        <div id="loading">
+          <div class="skel skel-h1"></div>
+          <div class="skel skel-line"></div>
+          <div class="skel skel-line short"></div>
+        </div>
+      </div>
     </div>
-    <div class="nav-section">
-      <div class="nav-section-title pr">PR Reviews</div>
-      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-request.md">PR #1 Request</a>
-      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-review_claude.md">PR #1 Claude v1</a>
-      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-review_claude_v2.md">PR #1 Claude v2</a>
-      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-review_gemini.md">PR #1 Gemini v1</a>
-      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-pr1-review_gemini_v2.md">PR #1 Gemini v2</a>
-      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-postmerge-firebase-setup.md">Firebase Setup Post-Merge</a>
-      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-firebase-setup-review_gemini.md">Firebase Setup Gemini</a>
-      <a class="nav-link" data-md="PR_Review/2026-04-25-role_dev-postmerge-firebase-setup-review_claude.md">Firebase Setup Claude</a>
-    </div>
+  </main>
+  <aside id="toc">
+    <div class="toc-title">On this page</div>
+  </aside>
+</div>
+
+<div id="cmd-modal" class="hidden">
+  <div id="cmd-backdrop"></div>
+  <div id="cmd-box">
+    <input id="cmd-input" placeholder="Jump to page...">
+    <div id="cmd-results"></div>
   </div>
 </div>
-<div id="main"><div id="content"><div id="loading">Loading...</div></div></div>
+
 <script>
 const contentDiv = document.getElementById('content');
+const tocDiv = document.getElementById('toc');
+const contentWrap = document.getElementById('content-wrap');
 
+/* marked renderer */
 const renderer = new marked.Renderer();
 renderer.link = (token) => {
   const href = token.href || '';
@@ -254,6 +431,74 @@ function normalizePath(baseDir, relativePath) {
   }
 }
 
+function postProcess() {
+  // Syntax highlight
+  contentDiv.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el));
+
+  // Copy buttons
+  contentDiv.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.onclick = () => {
+      navigator.clipboard.writeText(pre.querySelector('code').innerText);
+      btn.textContent = 'Copied';
+      setTimeout(() => btn.textContent = 'Copy', 1200);
+    };
+    pre.appendChild(btn);
+  });
+
+  // Heading anchors
+  contentDiv.querySelectorAll('h2, h3').forEach(h => {
+    const id = h.textContent.toLowerCase().replace(/[^\w가-힣]+/g, '-').replace(/^-|-$/g, '');
+    h.id = id;
+    const link = document.createElement('a');
+    link.href = '#' + id;
+    link.className = 'heading-anchor';
+    link.textContent = '#';
+    link.setAttribute('aria-label', 'Permalink to ' + h.textContent);
+    h.appendChild(link);
+  });
+
+  // Re-bind internal links
+  contentDiv.querySelectorAll('.md-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      loadMarkdown(link.dataset.md, false);
+    });
+  });
+
+  buildTOC();
+}
+
+function buildTOC() {
+  tocDiv.innerHTML = '<div class="toc-title">On this page</div>';
+  contentDiv.querySelectorAll('h2, h3').forEach(h => {
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent.replace(/#$/, '').trim();
+    a.style.paddingLeft = h.tagName === 'H3' ? '20px' : '8px';
+    a.dataset.target = h.id;
+    tocDiv.appendChild(a);
+  });
+  setupTOCObserver();
+}
+
+let tocObserver = null;
+function setupTOCObserver() {
+  if (tocObserver) tocObserver.disconnect();
+  tocObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        document.querySelectorAll('#toc a').forEach(a => {
+          a.classList.toggle('active', a.dataset.target === e.target.id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  contentDiv.querySelectorAll('h2, h3').forEach(h => tocObserver.observe(h));
+}
+
 async function loadMarkdown(path, fromRoot) {
   try {
     if (fromRoot) {
@@ -269,19 +514,24 @@ async function loadMarkdown(path, fromRoot) {
     const response = await fetch(path);
     if (!response.ok) throw new Error('Failed to load ' + path);
     const text = await response.text();
-    contentDiv.innerHTML = marked.parse(text);
-    document.querySelectorAll('.md-link').forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        loadMarkdown(link.dataset.md, false);
-      });
-    });
-    window.scrollTo(0, 0);
+
+    const update = () => {
+      contentDiv.innerHTML = marked.parse(text);
+      postProcess();
+      window.scrollTo(0, 0);
+    };
+
+    if (document.startViewTransition) {
+      document.startViewTransition(update);
+    } else {
+      update();
+    }
   } catch (e) {
-    contentDiv.innerHTML = '<p style="color:#ef4444">Error: ' + e.message + '</p>';
+    contentDiv.innerHTML = '<p style="color:var(--danger)">Error: ' + e.message + '</p>';
   }
 }
 
+/* Sidebar navigation */
 document.querySelectorAll('.nav-link[data-md]').forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
@@ -292,9 +542,60 @@ document.querySelectorAll('.nav-link[data-md]').forEach(link => {
 });
 
 const firstLink = document.querySelector('.nav-link[data-md]');
-if (firstLink) {
-  loadMarkdown(firstLink.dataset.md, true);
-}
+if (firstLink) loadMarkdown(firstLink.dataset.md, true);
+
+/* Scroll progress */
+contentWrap.addEventListener('scroll', () => {
+  const pct = (contentWrap.scrollTop / (contentWrap.scrollHeight - contentWrap.clientHeight)) * 100;
+  document.getElementById('scroll-progress').style.width = pct + '%';
+}, { passive: true });
+
+/* Theme toggle */
+const themeToggle = document.getElementById('theme-toggle');
+const stored = localStorage.getItem('theme');
+if (stored) document.documentElement.setAttribute('data-theme', stored);
+
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme')
+    || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+});
+
+/* Command Palette */
+const allLinks = Array.from(document.querySelectorAll('.nav-link[data-md]')).map(a => ({
+  title: a.textContent,
+  path: a.dataset.md,
+}));
+
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    document.getElementById('cmd-modal').classList.remove('hidden');
+    document.getElementById('cmd-input').focus();
+  }
+  if (e.key === 'Escape') document.getElementById('cmd-modal').classList.add('hidden');
+});
+
+document.getElementById('cmd-backdrop').addEventListener('click', () => {
+  document.getElementById('cmd-modal').classList.add('hidden');
+});
+
+document.getElementById('cmd-input').addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase();
+  const results = allLinks.filter(l => l.title.toLowerCase().includes(q)).slice(0, 8);
+  document.getElementById('cmd-results').innerHTML = results.map(r =>
+    `<div class="cmd-item" data-md="${r.path}">${r.title}<span>${r.path}</span></div>`
+  ).join('');
+});
+
+document.getElementById('cmd-results').addEventListener('click', (e) => {
+  const item = e.target.closest('.cmd-item');
+  if (!item) return;
+  loadMarkdown(item.dataset.md, true);
+  document.getElementById('cmd-modal').classList.add('hidden');
+});
 </script>
 </body>
 </html>
