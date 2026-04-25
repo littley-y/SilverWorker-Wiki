@@ -228,10 +228,11 @@
 <script>
 const contentDiv = document.getElementById('content');
 
-// Custom renderer: intercept .md links to use our nav system
 const renderer = new marked.Renderer();
-renderer.link = (href, title, text) => {
-  if (href.endsWith('.md')) {
+renderer.link = (token) => {
+  const href = token.href || '';
+  const text = token.text || '';
+  if (typeof href === 'string' && href.endsWith('.md')) {
     return `<a href="#" class="md-link" data-md="${href}">${text}</a>`;
   }
   return `<a href="${href}" target="_blank" rel="noopener">${text}</a>`;
@@ -240,13 +241,19 @@ marked.setOptions({ renderer });
 
 let currentPath = '';
 
-async function loadMarkdown(path) {
+async function loadMarkdown(path, fromRoot) {
   try {
-    if (currentPath && !path.startsWith('/') && !path.includes('://')) {
-      const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-      path = baseDir + path;
+    if (fromRoot) {
+      // Sidebar link: resolve from site root
+      currentPath = path;
+    } else {
+      // Markdown internal link: resolve relative to current document
+      if (currentPath && !path.includes('://')) {
+        const baseDir = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+        path = baseDir + path;
+      }
+      currentPath = path;
     }
-    currentPath = path;
 
     const response = await fetch(path);
     if (!response.ok) throw new Error('Failed to load ' + path);
@@ -255,7 +262,7 @@ async function loadMarkdown(path) {
     document.querySelectorAll('.md-link').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
-        loadMarkdown(link.dataset.md);
+        loadMarkdown(link.dataset.md, false);
       });
     });
     window.scrollTo(0, 0);
@@ -269,14 +276,14 @@ document.querySelectorAll('.nav-link[data-md]').forEach(link => {
     e.preventDefault();
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     link.classList.add('active');
-    loadMarkdown(link.dataset.md);
+    loadMarkdown(link.dataset.md, true);
   });
 });
 
 const firstLink = document.querySelector('.nav-link[data-md]');
 if (firstLink) {
   firstLink.classList.add('active');
-  loadMarkdown(firstLink.dataset.md);
+  loadMarkdown(firstLink.dataset.md, true);
 }
 </script>
 </body>
