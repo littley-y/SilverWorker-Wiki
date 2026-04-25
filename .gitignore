@@ -1,0 +1,35 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Obsidian (personal editor config)
+.obsidian/
+
+# AI Agents (auto-generated context files)
+.claude/
+.gemini/
+.superpowers/
+CLAUDE.md
+GEMINI.md
+
+# Code-repo only (not part of wiki content)
+scripts/
+config/
+verify_local.sh
+notify.py
+
+# Graphify output (AI-only knowledge graph)
+graphify-out/
+
+# Logs & Environments
+*.log
+.env
+
+# Build artifacts
+_site/
